@@ -37,19 +37,21 @@ def retail():
         input_file=File(
             'gs://fazzams_online_retail/raw/online_retail.csv',
             conn_id='gcp',
-            filetype=FileType.CSV,
-            
-        ),
+            filetype=FileType.CSV,            
+        ),        
         output_table=Table(
             name='raw_invoices',
             conn_id='gcp',
             metadata=Metadata(schema='retail')
         ),
         use_native_support=False,
-        #load_options=[PandasLoadOptions(delimiter=",")]
-        #chunk_size=100000
-    )
-
-    
+        if_exists="replace",
+        #load_options=[PandasLoadOptions(encoding="utf-8-sig")],
+        #chunk_size=100000,
+        #enable_native_fallback=True,
+        #native_support_kwargs={
+        #    "encoding": "ISO_8859_1",            
+       # },
+    )  
 
 retail()
