@@ -41,7 +41,7 @@ def retail():
             filetype=FileType.CSV,
             
         ),
-        load_options=[PandasLoadOptions(encoding="utf-8-sig", errors='replace')],
+        #load_options=[PandasLoadOptions(encoding="utf-8-sig")],
         output_table=Table(
             name='raw_invoices_2',
             conn_id='gcp',
