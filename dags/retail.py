@@ -8,7 +8,6 @@ from astro import sql as aql
 from astro.files import File
 from astro.sql.table import Table, Metadata
 from astro.constants import FileType
-#from astro.options import LoadOptions as PandasLoadOptions
 from astro.dataframes.load_options import PandasLoadOptions
 
 @dag(
@@ -22,7 +21,7 @@ def retail():
     upload_csv_to_gcs = LocalFilesystemToGCSOperator(
         task_id = 'upload_csv_to_gcs',
         src='/usr/local/airflow/include/dataset/online_retail.csv',        
-        dst='raw/online_retail_2.csv',
+        dst='raw/online_retail.csv',
         bucket='fazzams_online_retail',
         gcp_conn_id = 'gcp',
         mime_type = 'text/csv')
@@ -36,26 +35,23 @@ def retail():
     gcs_to_raw = aql.load_file(
         task_id='gcs_to_raw',
         input_file=File(
-            'gs://fazzams_online_retail/raw/online_retail_2.csv',
+            'gs://fazzams_online_retail/raw/online_retail.csv',
             conn_id='gcp',
-            filetype=FileType.CSV,
-            
-        ),
-        #load_options=[PandasLoadOptions(encoding="utf-8-sig")],
+            filetype=FileType.CSV,            
+        ),        
         output_table=Table(
-            name='raw_invoices_2',
+            name='raw_invoices',
             conn_id='gcp',
             metadata=Metadata(schema='retail')
         ),
         use_native_support=False,
-        
+        if_exists="replace",
+        #load_options=[PandasLoadOptions(encoding="utf-8-sig")],
         #chunk_size=100000,
         #enable_native_fallback=True,
         #native_support_kwargs={
         #    "encoding": "ISO_8859_1",            
        # },
-    )
-
-    
+    )  
 
 retail()
